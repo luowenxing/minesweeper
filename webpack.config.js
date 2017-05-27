@@ -6,6 +6,7 @@ module.exports = {
     entry: {
         index: './js/index.js'
     },
+    devtool: '#eval-source-map',
     output: {
         path:path.resolve(__dirname,"dist"),
         filename: '[name].[hash].bundle.js'

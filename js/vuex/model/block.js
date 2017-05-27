@@ -1,10 +1,7 @@
-const BlockStatus = {
-    Initial: 'Initial',
-    Safe: 'Safe',
-    Boom: 'Boom',
-    Sweeped:'Sweeped'
-};
-class Block {
+import { BlockStatus } from './status'
+
+// TODO: move code about Block in mutations here
+export default class Block {
 	constructor(isMine,x,y){
 		this.x = x
 		this.y = y
@@ -14,9 +11,3 @@ class Block {
 		this.status = BlockStatus.Initial
 	}
 }
-
-export {
-	Block,
-	BlockStatus
-}
-export default Block

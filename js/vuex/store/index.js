@@ -1,15 +1,25 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import mutations from '../mutations'
+import { GameStatus } from '../model/status'
 
 Vue.use(Vuex) 
+const mines = 10
+const mapWidth = 10
+const mapHeight = 10
+const gameStatus = GameStatus.Playing
+const sweepers = mines
+const map = []
+
 export default new Vuex.Store({
 	state: {
-		mapWidth:10,
-		mapHeight:10,
-		mines:10,
-		map:[]
+		map,
+		sweepers,
+		mines,
+		mapWidth,
+		mapHeight,
+		gameStatus,
+		time:0
 	},
 	mutations,
-
 })
