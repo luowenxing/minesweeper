@@ -1,12 +1,12 @@
 import Block from '../model/block'
-import { BlockStatus,GameStatus } from '../model/status'
+import { GameStatus } from '../model/status'
 import { shuffle,deepEach } from '../../lib/util'
 
 function caculateMine(block,store) {
-	if(block.status === BlockStatus.Safe) {
+	if(block.isSafe()) {
 		return
 	}
-	block.status = BlockStatus.Safe
+	block.setSafe()
 	let arr = []
 	let mines = 0
 	let x = block.x
@@ -19,7 +19,7 @@ function caculateMine(block,store) {
 	for(let x = xMin;x <= xMax;x++) {
 		for(let y = yMin;y <= yMax;y++) {
 			store.map[x][y].isMine ? mines ++ : mines
-			if(store.map[x][y].status == BlockStatus.Initial ) {
+			if(store.map[x][y].isInitial() ) {
 				// push no step on blocks
 				arr.push(store.map[x][y])
 			}
@@ -37,7 +37,7 @@ function caculateMine(block,store) {
 function checkWin(store) {
 	let sweeped = 0
 	deepEach(store.map,function(block){
-		if(block.status === BlockStatus.Sweeped && block.isMine) {
+		if(block.isMineSweeped()) {
 			sweeped++
 		}
 	})
@@ -47,7 +47,9 @@ function checkWin(store) {
 
 function showAllMines(store) {
 	deepEach(store.map,function(block){
-		block.status = block.isMine ? BlockStatus.Boom : block.status
+		if(block.isMine) {
+			block.setBoom()
+		}
 	})
 }
 
@@ -70,6 +72,8 @@ export default {
 		store.map = map
 		store.gameStatus = GameStatus.Playing
 		store.time = 0
+		store.sweepers = store.mines
+		clearInterval(store.clock)
 		store.clock = setInterval(() => {
 			store.time ++
 		},1000)
@@ -77,18 +81,18 @@ export default {
 	sweep(store,block) {
 		if(store.gameStatus === GameStatus.Playing ) {
 			// block which is already safe could not be sweeped
-			if(block.status != BlockStatus.Safe) {
-				if(block.status === BlockStatus.Sweeped) {
+			if(!block.isSafe()) {
+				if(block.isSweeped()) {
 					// unsweep a block
 					store.sweepers++
-					block.status = BlockStatus.Initial
-				} else if(block.status === BlockStatus.Initial) {
+					block.setInitial()
+				} else if(block.isInitial()) {
 					if(store.sweepers === 0) { // no more sweepers
 						return 
 					}
 					// sweep a block
 					store.sweepers--
-					block.status = BlockStatus.Sweeped
+					block.setSweeped()
 					if(store.sweepers === 0) { 
 						// sweepers are all used,check if you win
 						if(checkWin(store)) {
@@ -104,11 +108,10 @@ export default {
 	stepOn(store,block){
 		if(store.gameStatus === GameStatus.Playing ) {
 			// onlu initial status block could be marked
-			if(block.status === BlockStatus.Initial) {
+			if(block.isInitial()) {
 				if(block.isMine) { // step on a mine!!!
 					// you lose and show all the mines
 					store.gameStatus = GameStatus.Lose
-					block.status = BlockStatus.Boom
 					clearInterval(store.clock)
 					showAllMines(store)
 				} else {

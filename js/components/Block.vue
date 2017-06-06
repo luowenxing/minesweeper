@@ -1,22 +1,17 @@
 <script>
-	import { BlockStatus } from '../vuex/model/status'
 	export default {
 		functional: true,
 		render: function (createElement, context) {
 			let item = context.props.item
 			let innerHTML = ''
-			switch(item.status) {
-				case BlockStatus.Sweeped:
-					innerHTML = '🚩'
-					break
-				case BlockStatus.Safe:
-					innerHTML = item.sround > 0 ? item.sround : '&nbsp;'
-					break
-				case BlockStatus.Boom:
-					innerHTML = '💣'
-					break
-
+			if(item.isSweeped()){
+				innerHTML = '🚩'
+			} else if(item.isSafe()){
+				innerHTML = item.sround > 0 ? item.sround : '&nbsp;'
+			} else if(item.isBoom()){
+				innerHTML = '💣'
 			}
+
 			return createElement('div',{
 				attrs:{
 					class:item.status
