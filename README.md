@@ -5,3 +5,4 @@ A minesweeper implemented by vue and vuex with single file components
 
 # Todo
 * Add level select support
+* Add emoji on windows support
