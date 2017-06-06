@@ -1,82 +1,23 @@
-import Block from '../model/block'
 import { GameStatus } from '../model/status'
-import { shuffle,deepEach } from '../../lib/util'
-
-function caculateMine(block,store) {
-	if(block.isSafe()) {
-		return
-	}
-	block.setSafe()
-	let arr = []
-	let mines = 0
-	let x = block.x
-	let y = block.y
-	let xMin = x - 1 > 0 ? x - 1 : 0
-	let xMax = x + 1 < store.mapWidth ? x + 1 : x
-	let yMin = y - 1 > 0 ? y - 1 : 0
-	let yMax = y + 1 < store.mapHeight ? y + 1 : y
-	// search blocks around
-	for(let x = xMin;x <= xMax;x++) {
-		for(let y = yMin;y <= yMax;y++) {
-			store.map[x][y].isMine ? mines ++ : mines
-			if(store.map[x][y].isInitial() ) {
-				// push no step on blocks
-				arr.push(store.map[x][y])
-			}
-		}
-	}
-	block.sround = mines
-	if(mines == 0 ) {
-		// no mines around ,auto expand block around
-		arr.forEach( (block) => {
-			caculateMine(block,store)
-		})
-	}
-}
-
-function checkWin(store) {
-	let sweeped = 0
-	deepEach(store.map,function(block){
-		if(block.isMineSweeped()) {
-			sweeped++
-		}
-	})
-	// if all the mines are sweeped
-	return sweeped === store.mines
-}
-
-function showAllMines(store) {
-	deepEach(store.map,function(block){
-		if(block.isMine) {
-			block.setBoom()
-		}
-	})
-}
-
+import MineMap from '../model/map'
 
 export default {
-	newGame(store) {
+	newGame(store,isCreate) {
 		// generate a new map
 		let mines = store.mines
 		let width = store.mapWidth
 		let height = store.mapHeight
-		let map = new Array(height)
-		let mineCount = 0
-		for(let x = 0; x < height; x ++) {
-			map[x] = new Array(width)
-			for(let y = 0; y < width; y ++) {
-				map[x][y] = new Block(mineCount++ < mines,x,y)
-			}
-		}
-		shuffle(map)
-		store.map = map
-		store.gameStatus = GameStatus.Playing
+		store.mineMap = new MineMap(width,height,mines)
+		store.map = store.mineMap.map
 		store.time = 0
-		store.sweepers = store.mines
-		clearInterval(store.clock)
-		store.clock = setInterval(() => {
-			store.time ++
-		},1000)
+		store.sweepers = mines
+		if(!isCreate) {
+			store.gameStatus = GameStatus.Playing
+			clearInterval(store.clock)
+			store.clock = setInterval(() => {
+				store.time ++
+			},1000)
+		}
 	},
 	sweep(store,block) {
 		if(store.gameStatus === GameStatus.Playing ) {
@@ -95,9 +36,8 @@ export default {
 					block.setSweeped()
 					if(store.sweepers === 0) { 
 						// sweepers are all used,check if you win
-						if(checkWin(store)) {
+						if(store.mineMap.checkWin()) {
 							store.gameStatus = GameStatus.Win
-							clearInterval(store.clock)
 						}
 					}
 				}
@@ -113,11 +53,11 @@ export default {
 					// you lose and show all the mines
 					store.gameStatus = GameStatus.Lose
 					clearInterval(store.clock)
-					showAllMines(store)
+					store.mineMap.showAllMines()
 				} else {
 					// caculate the mines around block
 					// auto expand the safe block
-					caculateMine(block,store)
+					store.mineMap.caculateMine(block)
 				}
 			}
 		}

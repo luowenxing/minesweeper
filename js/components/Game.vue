@@ -20,7 +20,7 @@
 		watch:{
 			showResult(val){
 				if(val) {
-					setTimeout(alert.bind(window,'You ' + this.gameStatus + '!'),0)
+					setTimeout(alert.bind(window,'You ' + this.gameStatus + '!'),100)
 				}
 			}
 		},

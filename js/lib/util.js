@@ -29,3 +29,13 @@ export function deepEach(arr,fn) {
 		}
 	}
 }
+
+export function clockFormat(seconds) {
+	function addZero(num) {
+		return num < 10 ? '0' + num : num
+	}
+	let sec = seconds % 60
+	let hours = Math.floor(seconds / 60)
+	return addZero(hours) + ':' + addZero(sec)
+
+}

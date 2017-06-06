@@ -8,7 +8,8 @@ const BlockStatus = {
 const GameStatus = {
 	Win:'Win',
 	Lose:'Lose',
-	Playing:'Playing'
+	Playing:'Playing',
+	Waiting:'Waiting'
 }
 export {
 	BlockStatus,
