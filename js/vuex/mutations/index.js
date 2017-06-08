@@ -1,23 +1,26 @@
 import { GameStatus } from '../model/status'
 import MineMap from '../model/map'
+import { copy } from '../../lib/util'
 
 export default {
-	newGame(store,isCreate) {
+	setupGame(store){
+		clearInterval(store.clock)
 		// generate a new map
 		let mines = store.mines
 		let width = store.mapWidth
 		let height = store.mapHeight
 		store.mineMap = new MineMap(width,height,mines)
 		store.map = store.mineMap.map
-		store.time = 0
 		store.sweepers = mines
-		if(!isCreate) {
-			store.gameStatus = GameStatus.Playing
-			clearInterval(store.clock)
-			store.clock = setInterval(() => {
-				store.time ++
-			},1000)
-		}
+		store.gameStatus = GameStatus.Waiting
+		store.time = 0
+	},
+
+	startGame(store) {
+		store.gameStatus = GameStatus.Playing
+		store.clock = setInterval(() => {
+			store.time ++
+		},1000)
 	},
 	sweep(store,block) {
 		if(store.gameStatus === GameStatus.Playing ) {
@@ -61,5 +64,8 @@ export default {
 				}
 			}
 		}
+	},
+	modSettings(store,settings){
+		copy(settings,store)
 	}
 }

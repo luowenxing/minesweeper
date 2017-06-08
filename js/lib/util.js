@@ -39,3 +39,11 @@ export function clockFormat(seconds) {
 	return addZero(hours) + ':' + addZero(sec)
 
 }
+
+export function copy(src,dest) {
+	for(var item in src) {
+		if(src.hasOwnProperty(item)) {
+			dest[item] = src[item]
+		}
+	}
+}

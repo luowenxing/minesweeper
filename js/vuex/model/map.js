@@ -28,9 +28,9 @@ export default class MineMap {
 		let x = block.x
 		let y = block.y
 		let xMin = x - 1 > 0 ? x - 1 : 0
-		let xMax = x + 1 < this.width ? x + 1 : x
+		let xMax = x + 1 < this.height ? x + 1 : x
 		let yMin = y - 1 > 0 ? y - 1 : 0
-		let yMax = y + 1 < this.height ? y + 1 : y
+		let yMax = y + 1 < this.width ? y + 1 : y
 		// search blocks around
 		for(let x = xMin;x <= xMax;x++) {
 			for(let y = yMin;y <= yMax;y++) {
